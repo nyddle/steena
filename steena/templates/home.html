@@ -1,0 +1,55 @@
+{% from "macro.html" import display_story with context %}
+{% extends "base.html" %}
+{% block body %}
+
+    <!--~~~~~~~~~~~~~~~~~~~~~~~~~ Last news ~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <div class="last-news-fixed">
+        <div class="last-news-list">
+            <h1></h1>
+            <h1 id="rightcaption">НОВЫЕ</h1>
+            <ul>
+                {% for story in right_news[0:30] %}
+                    <article class="right" data-news-id="{{ story.id }}">
+                        {% if story.url[0:4] == 'text' %}
+                            <li><a href="/news/{{ story.id }}">{{ story.title }}</a>
+                                <a title="" class="topic-top" href="#" data-news-id="{{ story.id }}"></a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="/news/{{ story.id }}">{{ story.title }}</a>
+                                <a title="" class="topic-top" href="#" data-news-id="{{ story.id }}"></a>
+                            </li>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {# ~~~~~~~~~~~~~~~~~~~~~~~~~ Center Col ~~~~~~~~~~~~~~~~~~~~~~~~~  #}
+    <div class="center-col">
+
+    <h1></h1>
+    {% if (g.user and g.user.has_key('preview')) %} 
+        {% if g.user['preview'] == 'block' %} 
+            {% set display = 'Убрать' %}  
+        {% else %}
+            {% set display = 'Показать' %}  
+        {% endif %}
+    {% else %}
+        {% set display = 'Убрать' %}
+    {% endif %}
+    <a title="Показать превью" class="show-more-compact" href="#"><span>{{ display }}</span> превью</a>
+    <h1 id="leftcaption">{% if tag %} {{ tag }} {% else %} ПОПУЛЯРНЫЕ {%- endif %}</h1>
+
+    <ul class="top-news-list">
+        {% for story in left_news %}
+            <li>
+                {{ display_story(story) }}
+            </li>
+        {% endfor %}
+        <div id="page-nav">
+            <a href="/new/0/"></a>
+        </div>
+
+    </ul>
+{% endblock %}
