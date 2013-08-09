@@ -37,12 +37,8 @@ r = redis.StrictRedis.from_url(os.getenv('REDISCLOUD_URL', 'redis://127.0.0.1:63
 if (not r):
     sys.exit(1)
 
-#redis://rediscloud:EYsJhb2kD4MnCvW1@pub-redis-19659.us-east-1-2.1.ec2.garantiadata.com:19659
-#r = redis.StrictRedis.from_url('redis://rediscloud:EYsJhb2kD4MnCvW1@pub-redis-19659.us-east-1-2.1.ec2.garantiadata.com:19659')
-
 from pprint import pprint
 from inspect import getmembers
-
 
 from RedisSessionStore import *
 
@@ -61,14 +57,8 @@ env = 'debug'
 
 """
 Vkontakte test:
-ID приложения:  3706801
-Защищенный ключ:    5AP5clufqwBPqZ8yE9YJ
-
-
-The Heap Test
-App ID: 532091683492935
-App Secret: 30ccf1d094307a8edabdc64103ca9d05
-
+ID приложения:  3813410
+Защищенный ключ: vkc67cR3IxkwQLB3YS9R
 """
 
 app = MyFlask(__name__)
@@ -99,7 +89,6 @@ if app.debug:
     lesscss(app)
 app.static_path = '/static'
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 heroku = Heroku(app)
 gzapp = Gzip(app)
 
@@ -109,14 +98,8 @@ OAUTH STUFF
 
 SECRET_KEY = 'development key'
 DEBUG = True
-FACEBOOK_APP_ID = os.getenv('FACEBOOK_APP_ID', '532091683492935')#'114091315454409'
-FACEBOOK_APP_SECRET = os.getenv('FACEBOOK_APP_SECRET',
-                                '30ccf1d094307a8edabdc64103ca9d05') #'95310a6e453b063025c9bf672096eaf5'
-VKONTAKTE_APP_ID = os.getenv('VKONTAKTE_APP_ID', '3706801') #'3698600'
-VKONTAKTE_APP_SECRET = os.getenv('VKONTAKTE_APP_SECRET', '5AP5clufqwBPqZ8yE9YJ') #'TrZKHQ860aoa5bEVk3Ja'
-TWITTER_APP_ID = os.getenv('TWITTER_APP_ID', 'KA18RP9odbGRSv7m0TFtw') #'3698600'
-TWITTER_APP_SECRET = os.getenv('TWITTER_APP_SECRET',
-                               'kjs5OqKG4WbKjcS7tUOTlC1FqBNSeGEOINoXtQewj6Y') #'TrZKHQ860aoa5bEVk3Ja'
+VKONTAKTE_APP_ID = os.getenv('VKONTAKTE_APP_ID', '3813410') #'3698600'
+VKONTAKTE_APP_SECRET = os.getenv('VKONTAKTE_APP_SECRET', 'vkc67cR3IxkwQLB3YS9R') #'TrZKHQ860aoa5bEVk3Ja'
 
 oauth = OAuth()
 
@@ -166,10 +149,10 @@ def vkontakte_authorized(resp):
     response = me.data['response'][0]
     username = response['first_name'] + ' ' + response['last_name']
     user_id = 'vk' + str(user_id)
-    user = get_user_by_id(user_id)   #User.query.filter_by(name=resp['screen_name']).first()
+    #user = get_user_by_id(user_id)   #User.query.filter_by(name=resp['screen_name']).first()
     # user never signed on
-    if ((user is None) or (len(user.keys()) == 0)):
-        usr = create_social_user(user_id, username, resp['access_token'])
+    #if ((user is None) or (len(user.keys()) == 0)):
+    #    usr = create_social_user(user_id, username, resp['access_token'])
 
     """
     # in any case we update the authenciation token in the db
@@ -178,7 +161,7 @@ def vkontakte_authorized(resp):
     user.oauth_token = resp['oauth_token']
     user.oauth_secret = resp['oauth_token_secret']
     """
-    update_access_token(user_id, resp['access_token'])
+    #update_access_token(user_id, resp['access_token'])
     session['user_id'] = user_id
     flash('You were signed in')
     return redirect(next_url)
@@ -196,4 +179,7 @@ def logout():
     return redirect(request.referrer or url_for('index'))
 
 
+@app.route('/')
+def index():
+    return render_template('home.html')
 
