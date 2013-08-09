@@ -14,6 +14,7 @@ var vk = {
    VK.Auth.login(authInfo, vk.appPermissions);
 
    function authInfo(response){
+    alert('authenticating!');
     if(response.session){ // Авторизация успешна
      vk.data.user = response.session.user;
      vk.getFriends();
@@ -34,5 +35,9 @@ var vk = {
  }
 }
 
-$.ready(vk.init);
 
+$(document).ready(function() {
+   vk.init();
+    alert('HellO!');
+    
+});
