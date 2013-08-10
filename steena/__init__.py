@@ -91,27 +91,25 @@ def upload():
 
   return '<html><body><form action="" method=post enctype=multipart/form-data><input type=file name=image /><input type=submit /></form></body></html>'
 
-@app.route("/post", methods=['POST'])
+@app.route("/post", methods=['POST', 'GET'])
 def post():
+  print request.form
   if request.method == "POST":
     if 'image' not in request.files:
         return jsonify({'status': "err", 'error': 'No image!'})
-    if 'from' not in request.args:
+    if 'from' not in request.form:
         return jsonify({'status': "err", 'error': 'No from!'})
-    if 'to' not in request.args:
+    if 'to' not in request.form:
         return jsonify({'status': "err", 'error': 'No to!'})
 
-    sender = request.args.get('from')
-    to = request.args.get('to')
-
-    print sender
-    print to
+    sender = request.form['from']
+    receiver = request.form['to']
 
     response = cloudinary.uploader.upload(request.files['image'])
     #return jsonify({'status': "err", 'error': 'Not authenticated.'})
-    res = {}
+    res = { 'sender' : sender, 'receiver' : receiver, 'cloudinary' : response }
 
-    return str(response)
+    return str(res)
 
   else:
       return jsonify({'status': "err", 'error': 'Rwong method!'})
