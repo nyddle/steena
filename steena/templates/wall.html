@@ -22,13 +22,14 @@ function authInfo(response) {
   if (response.session) {
     //alert('user: '+response.session.mid);
     yourid = response.session.mid; 
+    /*
     VK.Api.call('users.get',  {fields: ['uid', 'first_name', 'last_name'], order: 'name', uids: yourid }, function(r){
        if(r.response){
         r = r.response;
         $('#whichwall').text((r[0].first_name + ' ' + r[0].last_name));
       }
     });
-
+    */
   } else {
     alert('not auth');
   }
