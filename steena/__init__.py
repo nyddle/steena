@@ -23,7 +23,6 @@ from flask.ext.heroku import Heroku
 from flask_oauth import OAuth
 from flask.ext.gzip import Gzip
 
-import facebook as fb
 import vkontakte as vk
 
 from werkzeug.security import generate_password_hash, \

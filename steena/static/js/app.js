@@ -1,10 +1,11 @@
+/*
 var vk = {
  data: {},
  api: "//vk.com/js/api/openapi.js",
  appID: 3813410,
  appPermissions: 'scope=friends,wall,offline',
  init: function(){
-  $.js(vk.api);
+  //$.js(vk.api);
   window.vkAsyncInit = function(){
    VK.init({apiId: vk.appID});
    load();
@@ -35,9 +36,7 @@ var vk = {
  }
 }
 
-
+*/
 $(document).ready(function() {
-   vk.init();
-    alert('HellO!');
     
 });
