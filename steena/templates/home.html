@@ -5,30 +5,10 @@
   <meta charset="utf-8">
   <title>Доступ к ВК</title>
   <!-- <link rel="stylesheet" href="style.css" /> --!>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
   <script src="/static/js/app.js"></script>
  </head>
  <body>
-  <section id="clientApi">Клиентский API</section>
-
-
-<!--
-<div id="vk_api_transport"></div>
-<script type="text/javascript">
-  window.vkAsyncInit = function() {
-    VK.init({
-      apiId: 3813410
-    });
-  };
-
-  setTimeout(function() {
-    var el = document.createElement("script");
-    el.type = "text/javascript";
-    el.src = "http://vk.com/js/api/openapi.js";
-    el.async = true;
-    document.getElementById("vk_api_transport").appendChild(el);
-  }, 0);
-</script>
---!>
 
 <script src="http://vk.com/js/api/openapi.js" type="text/javascript"></script>
 
@@ -41,17 +21,6 @@ VK.init({
 function authInfo(response) {
   if (response.session) {
     //alert('user: '+response.session.mid);
-  VK.Api.call('friends.get', {fields: ['uid', 'first_name', 'last_name'], order: 'name'}, function(r){
-   if(r.response){
-    r = r.response;
-    //var ol = $('#clientApi').append('ol');
-    for(var i = 0; i < r.length; ++i){
-     //var li = ol.add('li').html(r[i].first_name+' '+r[i].last_name+' ('+r[i].uid+')')
-       // alert(r[i].first_name);
-    }
-   }else alert("Не удалось получить список ваших друзей");
-  });
-
   } else {
     alert('not auth');
   }
@@ -61,16 +30,26 @@ VK.UI.button('login_button');
 </script>
 
 <table name="">
-
-
+    <tr>
+        <td>Welcome, <span id="username"></span>!</td><td></td>
+    <tr>
+        <td>Стена пользователя <span id="userwall">Anonymous</span></td><td>Ваши так называемые друзья</td>
+    <tr>
+    <tr>
+        <td><span id="wall">
+            <form method="POST" action="/upload" enctype="multipart/form-data">
+            <input type="file" name="image" size="200"><br>
+            <input type="submit" value="Submit">
+            </form>
+            </span></td><td></td>
+    <tr>
+    <tr>
+        <td><span id="wall" align="top">Стена пуста.</span></td><td><span id="friends">У вас нет друзей.</span></td>
+    <tr>
 
 </table>
 
 
-<form method="POST" action="/upload" enctype="multipart/form-data">
-<input type="file" name="image" size="200">
-<input type="submit" value="Submit">
-</form>
 
  </body>
 </html>

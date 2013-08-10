@@ -1,42 +1,28 @@
-/*
-var vk = {
- data: {},
- api: "//vk.com/js/api/openapi.js",
- appID: 3813410,
- appPermissions: 'scope=friends,wall,offline',
- init: function(){
-  //$.js(vk.api);
-  window.vkAsyncInit = function(){
-   VK.init({apiId: vk.appID});
-   load();
-  }
+function load_user_wall(vkid) {
 
-  function load(){
-   VK.Auth.login(authInfo, vk.appPermissions);
 
-   function authInfo(response){
-    alert('authenticating!');
-    if(response.session){ // Авторизация успешна
-     vk.data.user = response.session.user;
-     vk.getFriends();
-    }else alert("Авторизоваться не удалось!");
-   }
-  }
- },
- getFriends: function(){
+}
+
+$(document).ready(function() {
   VK.Api.call('friends.get', {fields: ['uid', 'first_name', 'last_name'], order: 'name'}, function(r){
    if(r.response){
     r = r.response;
-    var ol = $('#clientApi').add('ol');
+    var ol = $('#friends');
+    ol.html('');
+    ol.append('<ul>');
     for(var i = 0; i < r.length; ++i){
-     var li = ol.add('li').html(r[i].first_name+' '+r[i].last_name+' ('+r[i].uid+')')
+       var li = '<li>' + r[i].first_name+' '+r[i].last_name+' ('+r[i].uid+')' + '</li>';
+       var li = '<li data-vkid="' + r[i].uid + '">' + r[i].first_name+' '+ r[i].last_name + '</li>';
+       ol.append(li);
+       // alert(r[i].first_name);
     }
-   }else alert("Не удалось получить список ваших друзей");
-  })
- }
-}
+    ol.append('</ul>');
+    $('li').click(function() {
+        alert($(this).data('vkid'));
+    });
 
-*/
-$(document).ready(function() {
+   }else alert("Не удалось получить список ваших друзей");
+  });
+
     
 });
