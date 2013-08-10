@@ -21,6 +21,7 @@ VK.init({
 function authInfo(response) {
   if (response.session) {
     //alert('user: '+response.session.mid);
+    yourid = response.session.mid; 
   } else {
     alert('not auth');
   }
@@ -39,6 +40,8 @@ VK.UI.button('login_button');
         <td><span id="wall">
             <form method="POST" action="/upload" enctype="multipart/form-data">
             <input type="file" name="image" size="200"><br>
+            <input type="hidden" id="sender" name="from" size="200">
+            <input type="hidden" id="recipient" name="to" size="200">
             <input type="submit" value="Submit">
             </form>
             </span></td><td></td>

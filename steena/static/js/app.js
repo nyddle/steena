@@ -1,9 +1,13 @@
+var yourid;
+
 function load_user_wall(vkid) {
-
-
+    $('#recipient').attr('value', vkid);
 }
 
 $(document).ready(function() {
+
+  $('#sender').attr('value', yourid);
+
   VK.Api.call('friends.get', {fields: ['uid', 'first_name', 'last_name'], order: 'name'}, function(r){
    if(r.response){
     r = r.response;
@@ -18,10 +22,10 @@ $(document).ready(function() {
     }
     ol.append('</ul>');
     $('li').click(function() {
-        alert($(this).data('vkid'));
+        load_user_wall($(this).data('vkid'));
     });
 
-   }else alert("Не удалось получить список ваших друзей");
+   } else alert("Не удалось получить список ваших друзей");
   });
 
     

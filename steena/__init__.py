@@ -68,29 +68,9 @@ app.static_path = '/static'
 heroku = Heroku(app)
 gzapp = Gzip(app)
 
-class Cloudinary(object):
-  def __init__(self, app):
-    config = app.config['CLOUDINARY_URL'].split('://')[1]
-    config = config.replace("@", ":")
-    self.api_key, self.api_secret, self.name = config.split(":")
-
-  def upload_image(self, image):
-    keys = {'public_id': 2002}
-    res = uploader.call_api(
-      "upload",
-      uploader.build_upload_params(**keys),
-      api_key=self.api_key,
-      api_secret=self.api_secret,
-      cloud_name=self.name,
-      file=image.stream,
-    )
-    return res
-
 app.config['MAX_CONTENT_LENGTH'] = 16 * 16 * 1024 * 1024
 app.config['CLOUDINARY_URL'] = "cloudinary://916694617537676:uBOf1k7Ot9sYMwq30AU0A0boXvY@hmtpkyvtl" #XXX: feel free to use this URL, upload whatever you like ;)
-#cloudinary = Cloudinary(app)
 
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 SECRET_KEY = 'development key'
 DEBUG = True
@@ -110,6 +90,32 @@ def upload():
     return str(response)
 
   return '<html><body><form action="" method=post enctype=multipart/form-data><input type=file name=image /><input type=submit /></form></body></html>'
+
+@app.route("/post", methods=['POST'])
+def post():
+  if request.method == "POST":
+    if 'image' not in request.files:
+        return jsonify({'status': "err", 'error': 'No image!'})
+    if 'from' not in request.args:
+        return jsonify({'status': "err", 'error': 'No from!'})
+    if 'to' not in request.args:
+        return jsonify({'status': "err", 'error': 'No to!'})
+
+    sender = request.args.get('from')
+    to = request.args.get('to')
+
+    print sender
+    print to
+
+    response = cloudinary.uploader.upload(request.files['image'])
+    #return jsonify({'status': "err", 'error': 'Not authenticated.'})
+    res = {}
+
+    return str(response)
+
+  else:
+      return jsonify({'status': "err", 'error': 'Rwong method!'})
+
 
 """
 {u'secure_url': u'https://res.cloudinary.com/ummwut/image/upload/v1376132166/1001.gif', u'public_id': u'1001', u'format': u'gif', u'url': u'http://res.cloudinary.com/ummwut/image/upload/v1376132166/1001.gif', u'created_at': u'2013-08-10T10:56:06Z', u'bytes': 614274, u'height': 302, u'width': 288, u'version': 1376132166, u'signature': u'573f5b4a5947a0f185371f559c7d96cb3071ee36', u'type': u'upload', u'pages': 40, u'resource_type': u'image'}
