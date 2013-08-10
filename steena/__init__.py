@@ -3,9 +3,6 @@
 
 import os
 import sys
-# Notice: use  """ only for documentation strings. If it describe function or class, it should be INSIDE this item
-# For other comments use #( press ctrl + / for multiline comment in PyCharm). And forget about ';' :)
-# In Python you should use True or False - not true or TRUE.
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -23,14 +20,18 @@ from flask.ext.heroku import Heroku
 from flask_oauth import OAuth
 from flask.ext.gzip import Gzip
 
-import vkontakte as vk
-
 from werkzeug.security import generate_password_hash, \
     check_password_hash
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from cloudinary.uploader import upload
+from cloudinary.utils import cloudinary_url
 
 import redis
 
+from cloudinary import uploader #pip install git+https://github.com/cloudinary/pycloudinary/
 
 r = redis.StrictRedis.from_url(os.getenv('REDISCLOUD_URL', 'redis://127.0.0.1:6379'))
 if (not r):
@@ -40,25 +41,6 @@ from pprint import pprint
 from inspect import getmembers
 
 from RedisSessionStore import *
-
-
-ADMINS = [u'vk1210352', u'fb825509556']
-
-
-env = 'debug'
-
-# TODO:
-# if config is None:
-#     config = os.path.join(app.root_path, 'production.cfg')
-#
-# app.config.from_pyfile(config)
-#
-
-"""
-Vkontakte test:
-ID приложения:  3813410
-Защищенный ключ: vkc67cR3IxkwQLB3YS9R
-"""
 
 app = MyFlask(__name__)
 # session params
@@ -77,11 +59,6 @@ app.config['SECRET_KEY'] = 'devkey'
 # set the secret key.  keep this really secret:
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 app.config.update(SECRET_KEY=os.urandom(20))
-if env == 'debug':
-    app.debug = True
-if env == 'prod':
-    app.debug = False
-
 if app.debug:
     from flaskext.lesscss import lesscss
 
@@ -91,94 +68,51 @@ app.static_path = '/static'
 heroku = Heroku(app)
 gzapp = Gzip(app)
 
-"""
-OAUTH STUFF
-"""
+class Cloudinary(object):
+  def __init__(self, app):
+    config = app.config['CLOUDINARY_URL'].split('://')[1]
+    config = config.replace("@", ":")
+    self.api_key, self.api_secret, self.name = config.split(":")
+
+  def upload_image(self, image):
+    keys = {'public_id': 2002}
+    res = uploader.call_api(
+      "upload",
+      uploader.build_upload_params(**keys),
+      api_key=self.api_key,
+      api_secret=self.api_secret,
+      cloud_name=self.name,
+      file=image.stream,
+    )
+    return res
+
+app.config['MAX_CONTENT_LENGTH'] = 16 * 16 * 1024 * 1024
+app.config['CLOUDINARY_URL'] = "cloudinary://916694617537676:uBOf1k7Ot9sYMwq30AU0A0boXvY@hmtpkyvtl" #XXX: feel free to use this URL, upload whatever you like ;)
+#cloudinary = Cloudinary(app)
+
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 SECRET_KEY = 'development key'
 DEBUG = True
-VKONTAKTE_APP_ID = os.getenv('VKONTAKTE_APP_ID', '3813410') #'3698600'
-VKONTAKTE_APP_SECRET = os.getenv('VKONTAKTE_APP_SECRET', 'vkc67cR3IxkwQLB3YS9R') #'TrZKHQ860aoa5bEVk3Ja'
 
-oauth = OAuth()
-
-strategies = {}
-
-strategies['vkontakte'] = oauth.remote_app('vk-app',
-                                           base_url='https://oauth.vk.com/',
-                                           request_token_url=None,
-                                           access_token_url='https://oauth.vk.com/access_token',
-                                           authorize_url='http://oauth.vk.com/authorize',
-                                           consumer_key=VKONTAKTE_APP_ID,
-                                           consumer_secret=VKONTAKTE_APP_SECRET,
-)
-
-@app.route('/postvk')
-def postvk():
-    vk_api = vk.API(token=session['oauth_token'][0])
-    vk_api.wall.post(message="dsvdsv", redirect_uri='http://api.vk.com/blank.html')
-    #'https://api.vk.com/method/getProfiles?uid='+str(user_id)+'&access_token='+session['oauth_token']
-    return 'Posted!'
-
-
-@app.route('/login/<strategy>')
-def login(strategy):
-    return strategies[strategy].authorize(callback=url_for(strategy + '_authorized', strategy=strategy,
-                                                           next=request.args.get('next') or request.referrer or None,
-                                                           redirect_uri='http://www.itimes.ru',
-                                                           _external=True))
-
-
-vkontakte = strategies['vkontakte']
-
-
-@app.route('/login/authorized/vkontakte')
-@vkontakte.authorized_handler
-def vkontakte_authorized(resp):
-    next_url = request.args.get('next') or url_for('index')
-    if resp is None:
-        flash(u'You denied the request to sign in.')
-        return redirect(next_url)
-
-    strategy = 'vkontakte'
-    session['oauth_token'] = (resp['access_token'], '')
-    user_id = resp['user_id']
-    me = strategies[strategy].get(
-        'https://api.vk.com/method/getProfiles?uid=' + str(user_id) + '&access_token=' + resp['access_token'])
-    response = me.data['response'][0]
-    username = response['first_name'] + ' ' + response['last_name']
-    user_id = 'vk' + str(user_id)
-    #user = get_user_by_id(user_id)   #User.query.filter_by(name=resp['screen_name']).first()
-    # user never signed on
-    #if ((user is None) or (len(user.keys()) == 0)):
-    #    usr = create_social_user(user_id, username, resp['access_token'])
-
-    """
-    # in any case we update the authenciation token in the db
-    # In case the user temporarily revoked access we will have
-    # new tokens here.
-    user.oauth_token = resp['oauth_token']
-    user.oauth_secret = resp['oauth_token_secret']
-    """
-    #update_access_token(user_id, resp['access_token'])
-    session['user_id'] = user_id
-    flash('You were signed in')
-    return redirect(next_url)
-
-
-@vkontakte.tokengetter
-def get_vkontakte_oauth_token():
-    return session.get('oauth_token')
-
-@app.route('/logout')
-def logout():
-    session.pop('user_id', None)
-    session.pop('oauth_token', None)
-    flash('You were signed out')
-    return redirect(request.referrer or url_for('index'))
-
+app.config['DEBUG'] = True
 
 @app.route('/')
 def index():
     return render_template('home.html')
+
+
+
+@app.route("/upload", methods=['GET', 'POST'])
+def upload():
+  if request.method == "POST":
+    response = cloudinary.uploader.upload(request.files['image'])
+    return str(response)
+
+  return '<html><body><form action="" method=post enctype=multipart/form-data><input type=file name=image /><input type=submit /></form></body></html>'
+
+"""
+{u'secure_url': u'https://res.cloudinary.com/ummwut/image/upload/v1376132166/1001.gif', u'public_id': u'1001', u'format': u'gif', u'url': u'http://res.cloudinary.com/ummwut/image/upload/v1376132166/1001.gif', u'created_at': u'2013-08-10T10:56:06Z', u'bytes': 614274, u'height': 302, u'width': 288, u'version': 1376132166, u'signature': u'573f5b4a5947a0f185371f559c7d96cb3071ee36', u'type': u'upload', u'pages': 40, u'resource_type': u'image'}
+"""
+
 

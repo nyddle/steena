@@ -40,15 +40,14 @@ VK.init({
 });
 function authInfo(response) {
   if (response.session) {
-    alert('user: '+response.session.mid);
+    //alert('user: '+response.session.mid);
   VK.Api.call('friends.get', {fields: ['uid', 'first_name', 'last_name'], order: 'name'}, function(r){
    if(r.response){
     r = r.response;
-    alert('sdvdsvs');
     //var ol = $('#clientApi').append('ol');
     for(var i = 0; i < r.length; ++i){
      //var li = ol.add('li').html(r[i].first_name+' '+r[i].last_name+' ('+r[i].uid+')')
-        alert(r[i].first_name);
+       // alert(r[i].first_name);
     }
    }else alert("Не удалось получить список ваших друзей");
   });
@@ -61,6 +60,17 @@ VK.Auth.getLoginStatus(authInfo);
 VK.UI.button('login_button');
 </script>
 
+<table name="">
+
+
+
+</table>
+
+
+<form method="POST" action="/upload" enctype="multipart/form-data">
+<input type="file" name="image" size="200">
+<input type="submit" value="Submit">
+</form>
 
  </body>
 </html>
