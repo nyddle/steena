@@ -77,8 +77,24 @@ DEBUG = True
 
 app.config['DEBUG'] = True
 
-@app.route('/')
-def index():
+@app.route('/', defaults={'userid' : 'all'})
+@app.route('/<userid>')
+def index(userid):
+    a = []
+    if userid == 'all':
+        a = r.zrevrange('allpics', 0, -1)
+    else:
+        a = r.zrevrange('wall:'+userid, 0, -1)
+    a = map(json.loads, a)
+    a = map(lambda x: x['cloudinary']['url'], a)
+    return render_template('home.html', userid=userid, pics=a)
+
+@app.route('/pics/<userid>')
+def pics(userid):
+    #zrevrange wall:88364 0 -1
+    a = r.zrevrange('wall:'+userid, 0, -1)
+    a = map(json.loads, a)
+    a = map(lambda x: x['cloudinary']['url'], a)
     return render_template('home.html')
 
 
@@ -109,18 +125,13 @@ def post():
     #return jsonify({'status': "err", 'error': 'Not authenticated.'})
     res = { 'sender' : sender, 'receiver' : receiver, 'cloudinary' : response, 'time' : int(time())}
 
-    r.zadd('allpics', int(time()), str(res))
-    r.zadd('wall:'+receiver, int(time()), str(res))
-
+    r.zadd('allpics', int(time()), json.dumps(res))
+    r.zadd('wall:'+receiver, int(time()), json.dumps(res))
+    return redirect(request.referrer)
     return str(res)
 
   else:
       return jsonify({'status': "err", 'error': 'Rwong method!'})
-
-
-@app.route("/wall/<userid>")
-def wall(userid):
-    return render_template('home.html')
 
 """
 {u'secure_url': u'https://res.cloudinary.com/ummwut/image/upload/v1376132166/1001.gif', u'public_id': u'1001', u'format': u'gif', u'url': u'http://res.cloudinary.com/ummwut/image/upload/v1376132166/1001.gif', u'created_at': u'2013-08-10T10:56:06Z', u'bytes': 614274, u'height': 302, u'width': 288, u'version': 1376132166, u'signature': u'573f5b4a5947a0f185371f559c7d96cb3071ee36', u'type': u'upload', u'pages': 40, u'resource_type': u'image'}
