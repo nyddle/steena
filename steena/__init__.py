@@ -86,26 +86,8 @@ def index(userid):
     else:
         a = r.zrevrange('wall:'+userid, 0, -1)
     a = map(json.loads, a)
-    a = map(lambda x: x['cloudinary']['url'], a)
+    #a = map(lambda x: x['cloudinary']['url'], a)
     return render_template('home.html', userid=userid, pics=a)
-
-@app.route('/pics/<userid>')
-def pics(userid):
-    #zrevrange wall:88364 0 -1
-    a = r.zrevrange('wall:'+userid, 0, -1)
-    a = map(json.loads, a)
-    a = map(lambda x: x['cloudinary']['url'], a)
-    return render_template('home.html')
-
-
-
-@app.route("/upload", methods=['GET', 'POST'])
-def upload():
-  if request.method == "POST":
-    response = cloudinary.uploader.upload(request.files['image'])
-    return str(response)
-
-  return '<html><body><form action="" method=post enctype=multipart/form-data><input type=file name=image /><input type=submit /></form></body></html>'
 
 @app.route("/post", methods=['POST', 'GET'])
 def post():
@@ -126,6 +108,7 @@ def post():
     res = { 'sender' : sender, 'receiver' : receiver, 'cloudinary' : response, 'time' : int(time())}
 
     r.zadd('allpics', int(time()), json.dumps(res))
+    r.hset('allposts', res['cloudinary']['public_id'], json.dumps(res))
     r.zadd('wall:'+receiver, int(time()), json.dumps(res))
     return redirect(request.referrer)
     return str(res)

@@ -22,6 +22,13 @@ VK.init({
 function authInfo(response) {
   if (response.session) {
     //alert('user: '+response.session.mid);
+    VK.Api.call('users.get',  {fields: ['uid', 'first_name', 'last_name'], order: 'name', uids: response.session.mid}, function(r){
+       if(r.response){
+        r = r.response;
+        $('#username').html('<a href="/' + response.session.mid + '">' + (r[0].first_name + ' ' + r[0].last_name) + '</a>');
+      }
+    });
+
     yourid = response.session.mid; 
     VK.Api.call('users.get',  {fields: ['uid', 'first_name', 'last_name'], order: 'name', uids: '{{ userid }}'}, function(r){
        if(r.response){
@@ -57,7 +64,19 @@ VK.UI.button('login_button');
     <tr>
         <td><span id="wall" align="top">
         {% for pic in pics %}
-        <img src="{{ pic }}"></img>
+            <div id="{{ pic['cloudinary']['public_id'] }}">
+                <span class="sender" id="{{ pic['sender'] }}"></span>
+                <span class="recipient" id="{{ pic['recipient'] }}"></span>
+                <img src="{{ pic['cloudinary']['url'] }}"></img>
+                <span class="recipient" id="{{ pic['recipient'] }}"></span>
+                <span class="likes">
+                   <input type="button" class="like" value="Вау!"/>
+                   <input type="button" class="like" value="Смешно"/>
+                   <input type="button" class="like" value="Что?!"/>
+                   <input type="button" class="like" value="Скука"/>
+                   <input type="button" class="like" value="Фуу"/>
+                </span>
+            </div>
         {%- endfor %}
         </span></td><td><span id="friends">У вас нет друзей.</span></td>
     <tr>
