@@ -84,6 +84,11 @@ def like():
 
 @app.route('/api/like', methods=['POST'])
 def like():
+
+    public_id = request.form['public_id']
+    like_type = request.form['like_type']
+
+    r.hincrby('allposts:' + public_id, like_type, 1)
     return jsonify({'status': "ok" })
     return jsonify({'status': "err", 'error': 'Error'})
 
@@ -119,9 +124,9 @@ def post():
     #return jsonify({'status': "err", 'error': 'Not authenticated.'})
     res = { 'sender' : sender, 'receiver' : receiver, 'cloudinary' : response, 'time' : int(time())}
 
-    r.zadd('allpics', int(time()), json.dumps(res))
-    r.hset('allposts', res['cloudinary']['public_id'], json.dumps(res))
-    r.zadd('wall:'+receiver, int(time()), json.dumps(res))
+    r.hmset('allposts:' + res['cloudinary']['public_id'], res)
+    r.zadd('allpics', int(time()), res['cloudinary']['public_id'])
+    r.zadd('wall:'+receiver, int(time()), res['cloudinary']['public_id'])
     return redirect(request.referrer)
     return str(res)
 
