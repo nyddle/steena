@@ -80,6 +80,8 @@ app.config['DEBUG'] = True
 @app.route('/', defaults={'userid' : 'all'})
 @app.route('/<userid>')
 def index(userid):
+    print request
+
     a = []
     if userid == 'all':
         a = r.zrevrange('allpics', 0, -1)
