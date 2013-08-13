@@ -85,7 +85,7 @@ def addfriends():
     me = user[0]
     friends = friends['friends[]']
     for friend in friends:
-        print "user:"+me+":friends"
+        #print "user:"+me+":friends"
         r.lpush("user:"+me+":friends", friend)
     return jsonify({'status': "ok" })
 
@@ -102,19 +102,29 @@ def like():
 @app.route('/', defaults={'userid' : 'all'})
 @app.route('/<userid>')
 def index(userid):
-    print request
 
     a = []
     if userid == 'friends':
-        print r.lrange("user:"+me+":friends", 0, -1)
+        #print r.lrange("user:"+me+":friends", 0, -1)
+        friends = r.lrange("user:"+me+":friends", 0, -1)
         pass
     elif userid == 'all':
         a = r.zrevrange('allpics', 0, -1)
     else:
         a = r.zrevrange('wall:'+userid, 0, -1)
-    a = map(json.loads, a)
-    #a = map(lambda x: x['cloudinary']['url'], a)
-    return render_template('home.html', userid=userid, pics=a)
+
+    posts = []
+    for public_id in a:
+        #print public_id
+        post = r.hget('allposts', public_id)
+        #print post
+        post = json.loads(post)
+        #post['cloudinary'] = post['cloudinary'].replace("'", '"')
+        #print json.loads(post['cloudinary'])
+        posts.append(post)
+    print 'POSTS==:'
+    print posts
+    return render_template('home.html', userid=userid, posts=posts)
 
 @app.route("/post", methods=['POST', 'GET'])
 def post():
@@ -131,10 +141,16 @@ def post():
     receiver = request.form['to']
 
     response = cloudinary.uploader.upload(request.files['image'])
+
     #return jsonify({'status': "err", 'error': 'Not authenticated.'})
     res = { 'sender' : sender, 'receiver' : receiver, 'cloudinary' : response, 'time' : int(time())}
 
-    r.hmset('allposts:' + res['cloudinary']['public_id'], res)
+    print r.lrange("user:"+sender+":friends", 0, -1)
+    friends = r.lrange("user:"+sender+":friends", 0, -1)
+    for friend in friends:
+        r.lpush('feed:' + friend, res['cloudinary']['public_id'])
+
+    r.hset('allposts', res['cloudinary']['public_id'], json.dumps(res))
     r.zadd('allpics', int(time()), res['cloudinary']['public_id'])
     r.zadd('wall:'+receiver, int(time()), res['cloudinary']['public_id'])
     return redirect(request.referrer)
