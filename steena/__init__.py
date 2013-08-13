@@ -78,9 +78,16 @@ DEBUG = True
 app.config['DEBUG'] = True
 
 @app.route('/api/friends', methods=['POST'])
-def like():
+def addfriends():
+    print "FRIENDS"
+    friends = dict(request.form)
+    user = friends['me']
+    me = user[0]
+    friends = friends['friends[]']
+    for friend in friends:
+        print "user:"+me+":friends"
+        r.lpush("user:"+me+":friends", friend)
     return jsonify({'status': "ok" })
-    return jsonify({'status': "err", 'error': 'Error'})
 
 @app.route('/api/like', methods=['POST'])
 def like():
@@ -98,7 +105,10 @@ def index(userid):
     print request
 
     a = []
-    if userid == 'all':
+    if userid == 'friends':
+        print r.lrange("user:"+me+":friends", 0, -1)
+        pass
+    elif userid == 'all':
         a = r.zrevrange('allpics', 0, -1)
     else:
         a = r.zrevrange('wall:'+userid, 0, -1)
