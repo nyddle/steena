@@ -19,6 +19,29 @@ $(document).ready(function() {
    } else alert("Не удалось получить список ваших друзей");
   });
 
+  $('.like').click(function() {
+      public_id = $(this).parent().parent().attr('id');
+      like_type = $(this).attr('value');
+
+        var data = {
+            public_id : public_id,
+            like_type : like_type,
+        };
+        $.ajax({
+            type: "POST",
+            url: "/api/like",
+            data: data,
+            success: function(r) {
+                if (r.status == "ok") {
+                    alert('Лайк засчитан.');
+                     } else {
+                    alert('no luck (');
+                }
+            }
+        });
+
+
+  })
     
 });
 
