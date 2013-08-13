@@ -77,6 +77,11 @@ DEBUG = True
 
 app.config['DEBUG'] = True
 
+@app.route('/api/friends', methods=['POST'])
+def like():
+    return jsonify({'status': "ok" })
+    return jsonify({'status': "err", 'error': 'Error'})
+
 @app.route('/api/like', methods=['POST'])
 def like():
     return jsonify({'status': "ok" })
