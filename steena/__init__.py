@@ -99,30 +99,36 @@ def like():
     return jsonify({'status': "ok" })
     return jsonify({'status': "err", 'error': 'Error'})
 
+@app.route('/<userid>/friends')
+def index(userid):
+    a = r.ltrim("user:"+userid+":friends", 0, 10)  #LTRIM actistrm:<user-id> 0 1000
+    posts = []
+    if not a:
+        a = []
+    for public_id in a:
+        post = r.hget('allposts', public_id)
+        post = json.loads(post)
+        posts.append(post)
+    print posts
+    return render_template('home.html', userid=userid, posts=posts)
+
 @app.route('/', defaults={'userid' : 'all'})
 @app.route('/<userid>')
 def index(userid):
 
     a = []
-    if userid == 'friends':
-        #print r.lrange("user:"+me+":friends", 0, -1)
-        friends = r.lrange("user:"+me+":friends", 0, -1)
-        pass
-    elif userid == 'all':
+    if userid == 'all':
         a = r.zrevrange('allpics', 0, -1)
     else:
         a = r.zrevrange('wall:'+userid, 0, -1)
 
     posts = []
+    if not a:
+        a = []
     for public_id in a:
-        #print public_id
         post = r.hget('allposts', public_id)
-        #print post
         post = json.loads(post)
-        #post['cloudinary'] = post['cloudinary'].replace("'", '"')
-        #print json.loads(post['cloudinary'])
         posts.append(post)
-    print 'POSTS==:'
     print posts
     return render_template('home.html', userid=userid, posts=posts)
 

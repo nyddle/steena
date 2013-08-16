@@ -54,6 +54,7 @@ VK.UI.button('login_button');
     <tr>
         <td><span id="wall">
             <form method="POST" action="/post" enctype="multipart/form-data">
+            <input type="checkbox" class="anonymous" value="anonimous">Post as anonymous</checked>
             <input type="file" name="image" size="200"><br>
             <input type="hidden" id="sender" name="from" size="200">
             <input type="hidden" id="recipient" name="to" size="200" value="{{ userid }}">
