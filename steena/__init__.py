@@ -16,7 +16,6 @@ import tldextract
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, jsonify, Response
 from flask.ext.assets import Environment, Bundle
-from flask.ext.heroku import Heroku
 from flask_oauth import OAuth
 from flask.ext.gzip import Gzip
 
@@ -42,7 +41,7 @@ from inspect import getmembers
 
 from RedisSessionStore import *
 
-app = MyFlask(__name__)
+app = MyFlask(__name__, static_folder='static', static_url_path='')
 # session params
 app.config['SESSION_REDIS_HOST'] = os.getenv('REDISCLOUD_URL', 'redis://127.0.0.1:6379')
 app.config['SESSION_REDIS_DB'] = 1
@@ -65,7 +64,6 @@ if app.debug:
     lesscss(app)
 app.static_path = '/static'
 
-heroku = Heroku(app)
 gzapp = Gzip(app)
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 16 * 1024 * 1024

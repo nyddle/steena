@@ -1,6 +1,23 @@
 var yourid;
 
+
+function draw_friend() {
+
+    return '<a href="" class="friend"> \
+        <div class="friend__avatar"> \
+            <img src="images/avatar.jpg" alt="" width="30" /> \
+        </div> \
+        <div class="friend__name"> \
+            Дмитрий Медведев\
+        </div>\
+    </a>';
+
+}
+
+
 $(document).ready(function() {
+
+  alert(draw_friend());
 
   $('#sender').attr('value', yourid);
 
@@ -12,11 +29,13 @@ $(document).ready(function() {
     var rids = []
     ol.html('');
     ol.append('<ul>');
+
     for(var i = 0; i < r.length; ++i){
-       var li = '<li data-vkid="' + r[i].uid + '"><a href="/' + r[i].uid + '">' + r[i].first_name+' '+ r[i].last_name + '</a></li>';
-       ol.append(li);
-       rids.push(r[i].uid);
+       //var li = '<li data-vkid="' + r[i].uid + '"><a href="/' + r[i].uid + '">' + r[i].first_name+' '+ r[i].last_name + '</a></li>';
+       //ol.append(li);
+       //rids.push(r[i].uid);
        // alert(r[i].first_name);
+       $('#friends').append(draw_friend());
     }
     ol.append('</ul>');
    data = { friends : rids, me : yourid };
@@ -36,6 +55,20 @@ $(document).ready(function() {
 
    } else alert("Не удалось получить список ваших друзей");
   });
+
+/* friend
+
+<a href="" class="friend">
+    <div class="friend__avatar">
+        <img src="images/avatar.jpg" alt="" width="30" />
+    </div>
+    <div class="friend__name">
+        Дмитрий Медведев
+    </div>
+</a>
+
+/friend */ 
+
 
   $('.like').click(function() {
       public_id = $(this).parent().parent().attr('id');
