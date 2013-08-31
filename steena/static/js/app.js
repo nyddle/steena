@@ -1,14 +1,14 @@
 var yourid;
 
 
-function draw_friend() {
+function draw_friend(uid, name, photo) {
 
-    return '<a href="" class="friend"> \
+    return '<a href="/' + uid + '" class="friend"> \
         <div class="friend__avatar"> \
-            <img src="images/avatar.jpg" alt="" width="30" /> \
+            <img src="' + photo + '" alt="" width="30" /> \
         </div> \
         <div class="friend__name"> \
-            Дмитрий Медведев\
+            ' + name + '\
         </div>\
     </a>';
 
@@ -17,27 +17,20 @@ function draw_friend() {
 
 $(document).ready(function() {
 
-  alert(draw_friend());
-
   $('#sender').attr('value', yourid);
 
-  VK.Api.call('friends.get', {fields: ['uid', 'first_name', 'last_name'], order: 'name'}, function(r){
+  VK.Api.call('friends.get', {fields: ['uid', 'first_name', 'last_name', 'photo'], order: 'name'}, function(r){
    if(r.response){
     r = r.response;
 
-    var ol = $('#friends');
-    var rids = []
-    ol.html('');
-    ol.append('<ul>');
-
+    var rids = [];
     for(var i = 0; i < r.length; ++i){
-       //var li = '<li data-vkid="' + r[i].uid + '"><a href="/' + r[i].uid + '">' + r[i].first_name+' '+ r[i].last_name + '</a></li>';
-       //ol.append(li);
-       //rids.push(r[i].uid);
-       // alert(r[i].first_name);
-       $('#friends').append(draw_friend());
+       var name = r[i].first_name+' '+ r[i].last_name;
+       var uid = r[i].uid;
+       var photo = r[i].photo;
+       rids.push(uid)
+       $('#friends').append(draw_friend(uid, name, photo));
     }
-    ol.append('</ul>');
    data = { friends : rids, me : yourid };
    $.ajax({
             type: "POST",
@@ -45,7 +38,6 @@ $(document).ready(function() {
             data: data,
             success: function(r) {
                 if (r.status == "ok") {
-                    //alert('sdv');
                  } else {
                     alert('not ok');
                 }
@@ -55,19 +47,6 @@ $(document).ready(function() {
 
    } else alert("Не удалось получить список ваших друзей");
   });
-
-/* friend
-
-<a href="" class="friend">
-    <div class="friend__avatar">
-        <img src="images/avatar.jpg" alt="" width="30" />
-    </div>
-    <div class="friend__name">
-        Дмитрий Медведев
-    </div>
-</a>
-
-/friend */ 
 
 
   $('.like').click(function() {

@@ -33,21 +33,24 @@ VK.init({
 function authInfo(response) {
   if (response.session) {
     //alert('user: '+response.session.mid);
-    VK.Api.call('users.get',  {fields: ['uid', 'first_name', 'last_name'], order: 'name', uids: response.session.mid}, function(r){
+    VK.Api.call('users.get',  {fields: ['uid', 'first_name', 'last_name', 'photo'], order: 'name', uids: response.session.mid}, function(r){
        if(r.response){
         r = r.response;
-        $('#username').html('<a href="/' + response.session.mid + '">' + (r[0].first_name + ' ' + r[0].last_name) + '</a>');
+        $('.user__info').find('h2').text(r[0].first_name + ' ' + r[0].last_name);
+        $('.user__avatar').find('img').attr('src', r[0].photo);
       }
     });
 
     yourid = response.session.mid; 
+    /*
     VK.Api.call('users.get',  {fields: ['uid', 'first_name', 'last_name'], order: 'name', uids: '{{ userid }}'}, function(r){
        if(r.response){
         r = r.response;
         $('#whichwall').text((r[0].first_name + ' ' + r[0].last_name));
+        alert(r[0].first_name + ' ' + r[0].last_name);
       }
     });
-
+    */
   } else {
     alert('not auth');
   }
@@ -55,13 +58,6 @@ function authInfo(response) {
 VK.Auth.getLoginStatus(authInfo);
 VK.UI.button('login_button');
 </script>
-            <form method="POST" action="/post" enctype="multipart/form-data">
-            <input type="checkbox" class="anonymous" value="anonimous">Post as anonymous</checked>
-            <input type="file" name="image" size="200"><br>
-            <input type="hidden" id="sender" name="from" size="200">
-            <input type="hidden" id="recipient" name="to" size="200" value="{{ userid }}">
-            <input type="submit" value="Submit">
-            </form>
 
     <aside class="navigation-block">
         <nav>
@@ -87,85 +83,53 @@ VK.UI.button('login_button');
     <div id="steena">
         <div class="clearfix"></div>
         {% for pic in posts%}
-        <!-- POST --!>
-        <div class="post">
-            <div class="post__people">
-                <a href="post__people--author">Дмитрий Медведев</a>
+            <!-- POST --!>
+            <div class="post">
+                <div class="post__people">
+                    <a href="post__people--author">Дмитрий Медведев</a>
+                </div>
+                <div class="post__image">
+                    <img src="{{ pic['cloudinary']['url'] }}" alt="" />
+                </div>
+                <div class="post__social">
+                    <a href="" class="reply">Ответить</a>
+                    <a href="" class="share">Поделиться</a>
+                    <a href="" class="like">
+                     Лайк
+                        <span class="like__types">
+                        <a href="" class="like--cool"></a>
+                        <a href="" class="like--fun"></a>
+                        <a href="" class="like--whats"></a>
+                        <a href="" class="like--boring"></a>
+                        <a href="" class="like--fu"></a>
+                        </span>
+                    </a>
+                    <a href="" class="personal">Личное</a>
+                </div>
             </div>
-            <div class="post__image">
-                <img src="images/img1.jpg" alt="" />
-            </div>
-            <div class="post__social">
-                <a href="" class="reply">Ответить</a>
-                <a href="" class="share">Поделиться</a>
-                <a href="" class="like">
-                 Лайк
-                    <span class="like__types">
-                    <a href="" class="like--cool"></a>
-                    <a href="" class="like--fun"></a>
-                    <a href="" class="like--whats"></a>
-                    <a href="" class="like--boring"></a>
-                    <a href="" class="like--fu"></a>
-                    </span>
-                </a>
-                <a href="" class="personal">Личное</a>
-            </div>
-        </div>
         {% endfor %}
         <!-- HH --!>
     </div>
     <div id="community">
         <div id="user">
             <div class="user__avatar">
-                <img src="images/avatar.jpg" alt="" width="100" />
+                <img src="" alt="" width="100" />
             </div>
             <div class="user__info">
-                <h2>Владимир Путин</h2>
+                <h2>Anonimous</h2>
             </div>
             <a href="" class="create-post">Добавить пост</a>
-            <input type="checkbox">Анонимно
+            <!-- <input type="checkbox">Анонимно --!>
+            <form method="POST" action="/post" enctype="multipart/form-data">
+                <input type="checkbox" class="anonymous" value="anonimous">Post as anonymous</checked>
+                <input type="file" name="image" size="200"><br>
+                <input type="hidden" id="sender" name="from" size="200">
+                <input type="hidden" id="recipient" name="to" size="200" value="{{ userid }}">
+                <input type="submit" value="Submit">
+            </form>
+
         </div>
         <div id="friends">
-            <a href="" class="friend">
-                <div class="friend__avatar">
-                    <img src="images/avatar.jpg" alt="" width="30" />
-                </div>
-                <div class="friend__name">
-                    Дмитрий Медведев
-                </div>
-            </a>
-            <a href="" class="friend">
-                <div class="friend__avatar">
-                    <img src="images/avatar.jpg" alt="" width="30" />
-                </div>
-                <div class="friend__name">
-                    Жириновский
-                </div>
-            </a>
-            <a href="" class="friend">
-                <div class="friend__avatar">
-                    <img src="images/avatar.jpg" alt="" width="30" />
-                </div>
-                <div class="friend__name">
-                    Барак
-                </div>
-            </a>
-            <a href="" class="friend">
-                <div class="friend__avatar">
-                    <img src="images/avatar.jpg" alt="" width="30" />
-                </div>
-                <div class="friend__name">
-                    Дик Чейни
-                </div>
-            </a>
-            <a href="" class="friend">
-                <div class="friend__avatar">
-                    <img src="images/avatar.jpg" alt="" width="30" />
-                </div>
-                <div class="friend__name">
-                    Мит Ромни
-                </div>
-            </a>
         </div>
     </div>
 </body>
