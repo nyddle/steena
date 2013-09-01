@@ -77,7 +77,7 @@ app.config['DEBUG'] = True
 
 @app.route('/api/friends', methods=['POST'])
 def addfriends():
-    print "FRIENDS"
+
     friends = dict(request.form)
     user = friends['me']
     me = user[0]
@@ -87,15 +87,34 @@ def addfriends():
         r.lpush("user:"+me+":friends", friend)
     return jsonify({'status': "ok" })
 
+
 @app.route('/api/like', methods=['POST'])
 def like():
 
-    public_id = request.form['public_id']
-    like_type = request.form['like_type']
+    if request.method == "POST":
+        public_id = request.form['public_id']
+        like_type = request.form['like_type']
 
-    r.hincrby('allposts:' + public_id, like_type, 1)
-    return jsonify({'status': "ok" })
-    return jsonify({'status': "err", 'error': 'Error'})
+        #hincrby likes:post2 otstoy 1
+        r.hincrby('likes:'+public_id, like_type, 1)
+        return jsonify({'status': "ok" })
+
+    else:
+        return jsonify({'status': "err", 'error': 'Rwong method!'})
+
+
+
+@app.route("/vote/postid", methods=['POST'])
+def vote():
+
+    if request.method == "POST":
+        sender = request.form['from']
+        receiver = request.form['to']
+
+    #r.hset('allposts', res['cloudinary']['public_id'], json.dumps(res))
+    else:
+        return jsonify({'status': "err", 'error': 'Rwong method!'})
+
 
 @app.route('/<userid>/friends')
 def index(userid):
@@ -109,6 +128,7 @@ def index(userid):
         posts.append(post)
     print posts
     return render_template('home.html', userid=userid, posts=posts)
+
 
 @app.route('/', defaults={'userid' : 'all'})
 @app.route('/<userid>')
@@ -129,6 +149,7 @@ def index(userid):
         posts.append(post)
     print posts
     return render_template('home.html', userid=userid, posts=posts)
+
 
 @app.route("/post", methods=['POST', 'GET'])
 def post():
@@ -162,6 +183,7 @@ def post():
 
   else:
       return jsonify({'status': "err", 'error': 'Rwong method!'})
+
 
 """
 {u'secure_url': u'https://res.cloudinary.com/ummwut/image/upload/v1376132166/1001.gif', u'public_id': u'1001', u'format': u'gif', u'url': u'http://res.cloudinary.com/ummwut/image/upload/v1376132166/1001.gif', u'created_at': u'2013-08-10T10:56:06Z', u'bytes': 614274, u'height': 302, u'width': 288, u'version': 1376132166, u'signature': u'573f5b4a5947a0f185371f559c7d96cb3071ee36', u'type': u'upload', u'pages': 40, u'resource_type': u'image'}

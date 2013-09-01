@@ -84,29 +84,30 @@ VK.UI.button('login_button');
         <div class="clearfix"></div>
         {% for pic in posts%}
             <!-- POST --!>
-            <div class="post">
+            <div class="post" id="{{ pic['cloudinary']['public_id'] }}">
                 <div class="post__people">
                     <a href="post__people--author">Дмитрий Медведев</a>
                 </div>
                 <div class="post__image">
                     <img src="{{ pic['cloudinary']['url'] }}" alt="" />
                 </div>
-                <div class="post__social">
-                    <a href="" class="reply">Ответить</a>
-                    <a href="" class="share">Поделиться</a>
+                <div class="post__social" data-id="{{ pic['cloudinary']['public_id'] }}">
+                    <!-- <a href="" class="reply">Ответить</a> --!>
+                    <!-- <a href="" class="share">Поделиться</a> --!>
                     <a href="" class="like">
-                     Лайк
+                     <!--Лайк--!>
                         <span class="like__types">
-                        <a href="" class="like--cool"></a>
-                        <a href="" class="like--fun"></a>
-                        <a href="" class="like--whats"></a>
-                        <a href="" class="like--boring"></a>
-                        <a href="" class="like--fu"></a>
+                        <a href="javascript:void(0);" class="like--cool">Cool (0)</a>
+                        <a href="javascript:void(0);" class="like--fun">Fun (0)</a>
+                        <a href="javascript:void(0);" class="like--whats">Wat? (0)</a>
+                        <a href="javascript:void(0);" class="like--boring">Psst (0)</a>
+                        <a href="javascript:void(0);" class="like--fu">Fuuu (0)</a>
                         </span>
                     </a>
                     <a href="" class="personal">Личное</a>
                 </div>
             </div>
+            
         {% endfor %}
         <!-- HH --!>
     </div>

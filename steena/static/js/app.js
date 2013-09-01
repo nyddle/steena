@@ -17,6 +17,16 @@ function draw_friend(uid, name, photo) {
 
 $(document).ready(function() {
 
+  //$('.like__types').children().find('a').text('sdvsdvds');
+  $("[class^=like--]").click(function() {
+    var like_type = $(this).attr('class'));
+    var public_id = $(this).parent().parent().find('.post__social').data('id');
+    data = {
+        public_id : public_id,
+        like_type : like_type
+    };
+  });
+
   $('#sender').attr('value', yourid);
 
   VK.Api.call('friends.get', {fields: ['uid', 'first_name', 'last_name', 'photo'], order: 'name'}, function(r){
