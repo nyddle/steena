@@ -103,7 +103,7 @@ def like():
         return jsonify({'status': "err", 'error': 'Rwong method!'})
 
 
-
+"""
 @app.route("/vote/postid", methods=['POST'])
 def vote():
 
@@ -114,6 +114,7 @@ def vote():
     #r.hset('allposts', res['cloudinary']['public_id'], json.dumps(res))
     else:
         return jsonify({'status': "err", 'error': 'Rwong method!'})
+"""
 
 
 @app.route('/<userid>/friends')

@@ -84,7 +84,7 @@ VK.UI.button('login_button');
         <div class="clearfix"></div>
         {% for pic in posts%}
             <!-- POST --!>
-            <div class="post" id="{{ pic['cloudinary']['public_id'] }}">
+            <div class="post" id="{{ pic['cloudinary']['public_id'] }}" data-sender="{{ pic['sender'] }}">
                 <div class="post__people">
                     <a href="post__people--author">Дмитрий Медведев</a>
                 </div>
