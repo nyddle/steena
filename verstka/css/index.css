@@ -205,6 +205,10 @@ h4 {
   z-index: 1;
   background: #2E6AA5;
 }
+#friends {
+  overflow-y: scroll;
+  height: 400px;
+}
 .friend {
   border-top: 1px solid #3b7ac2;
   border-bottom: 1px solid #234974;
