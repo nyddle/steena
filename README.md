@@ -4,10 +4,11 @@
 
 - `fetch.py` — выкачивает всё из публичного API дашборда <https://mimo.xiaomi.com/rl> в `data/` (только stdlib).
 - `analyze.py` — строит `REPORT.md` с таблицами по данным из `data/`.
+- `build_dashboard.py` + `dashboard_template.html` → `dashboard.html` — интерактивный дашборд с графиками (hover, таблицы, светлая/тёмная тема).
 - `data/` — снимок на 2026-09-22: конфиг, статус, ~2000 метрик × 30 шагов для каждого рана (pro, flash), бенчмарки, заметки операторов.
 
 ```bash
-python fetch.py && python analyze.py
+python fetch.py && python analyze.py && python build_dashboard.py
 ```
 
 ## Что выложено на самом деле (на 22.09.2026)
